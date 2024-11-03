@@ -4,40 +4,32 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import defaultdict
 import heapq
-
-
 # Функция суммаризации текста
 
 
 def summarize_text(text, num_sentences=None):
     # Токенизация текста на предложения
     sentences = sent_tokenize(text, language=language)
-
     # Токенизация текста на слова и удаление стоп-слов
     words = word_tokenize(text.lower(), language=language)
     stop_words = set(stopwords.words(language))
     words = [word for word in words if word.isalnum() and word not in stop_words]
-
     # Подсчет частоты слов
     word_freq = defaultdict(int)
     for word in words:
         word_freq[word] += 1
-
     # Определение значимости каждого предложения
     sentence_scores = defaultdict(int)
     for i, sentence in enumerate(sentences):
         for word in word_tokenize(sentence.lower(), language=language):
             if word in word_freq:
                 sentence_scores[i] += word_freq[word]
-
     # Выбор предложений для суммаризации
     if num_sentences:
         best_sentences = heapq.nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
         best_sentences = sorted(best_sentences)
         summary = ' '.join([sentences[i] for i in best_sentences])
         return summary
-
-
 # Основная функция Streamlit
 
 
